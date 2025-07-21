@@ -7,6 +7,114 @@ import { instantiate } from './deploy_commands';
 
 import aggregateEvents from './events';
 
+import net from 'net'; // for sockets
+import mysql from 'mysql2';
+import { createStdEmbed } from './utils/embeds';
+import { statuses } from './utils/statuses';
+
+// SQL Setup
+// to-do: modularize this whole thing
+const sqlconfig = {
+  host: process.env.SQL_HOST,
+  user: process.env.SQL_USER,
+  database: process.env.SQL_DB,
+  password: process.env.SQL_PASS,
+  connectionLimit: 10
+}
+
+const sqlconfigmc = {
+  host: process.env.SQLMC_HOST,
+  user: process.env.SQLMC_USER,
+  database: process.env.SQLMC_DB,
+  password: process.env.SQLMC_PASS,
+  connectionLimit: 10
+}
+
+const pool = mysql.createPool(sqlconfig, (err) => {
+  if (err) {
+    console.error('Error creating main SQL pool:', err);
+    return;
+  }
+});
+
+const poolmc = mysql.createPool(sqlconfigmc, (err) => {
+  if (err) {
+    console.error('Error creating MC SQL pool:', err);
+    return;
+  }
+});
+
+// Test the pool
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error getting main MySQL pool connection:', err);
+    return;
+  }
+
+  console.log('MySQL main pool connection test successful!');
+
+  // Release the connection back to the pool
+  connection.release();
+});
+
+poolmc.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error getting MC MySQL pool connection:', err);
+    return;
+  }
+
+  console.log('MySQL MC pool connection test successful!');
+
+  // Release the connection back to the pool
+  connection.release();
+});
+
+pool.on('acquire', function (connection) {
+  console.log('MySQL main pool connection %d acquired', connection.threadId);
+  connection.on('error', function (err) {
+    console.error('Error with main MySQL connection:', err);
+    connection.release();
+  });
+});
+
+poolmc.on('acquire', function (connection) {
+  console.log('MySQL MC pool connection %d acquired', connection.threadId);
+  connection.on('error', function (err) {
+    console.error('Error with MC MySQL connection:', err);
+    connection.release();
+  });
+});
+
+function getMySQLVersion() {
+  pool.query('SELECT version()', (error, results, fields) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const mysqlVersion = results[0]['version()'];
+    console.log(`main MySQL Version: ${mysqlVersion}`);
+  });
+}
+
+function getMySQLVersionMC() {
+  poolmc.query('SELECT version()', (error, results, fields) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const mysqlVersion = results[0]['version()'];
+    console.log(`MC MySQL Version: ${mysqlVersion}`);
+  });
+}
+
+getMySQLVersion();
+getMySQLVersionMC();
+
+export { pool, poolmc };
+
+// Discord client itself
 class DiscordClient extends Discord.Client {
   constructor(s: Discord.ClientOptions) {
     super(s);
@@ -46,6 +154,25 @@ client.on(Discord.Events.ClientReady, async () => {
   // eslint-disable-next-line
   await logger.info("I'm ready!");
 
+
+  setInterval(function() {
+    let blurb = statuses[Math.floor(Math.random()*statuses.length)];
+    //client.user.setActivity(status, {type: "PLAYING"});
+    client.user.setPresence({
+      status: 'idle',
+      activities: [{
+        type: Discord.ActivityType.Custom,
+        name: 'gay',
+        state: blurb
+      }]
+    }) 
+  },
+  300000)
+
+  const guild = await client.guilds.fetch(process.env.GUILD_ID);
+  const channel = await guild.channels.fetch(process.env.BOT_MESSAGES_CHANNEL_ID) as Discord.TextChannel | null;
+  await channel.send(`I'm ready to be edgy gay heheh ribbet`)
+
   for (const file of commandFiles) {
     const name = file.endsWith('.ts')
       ? file.replace('.ts', '')
@@ -60,7 +187,87 @@ client.on(Discord.Events.ClientReady, async () => {
 
     await logger.debug(`Loaded command "${name}"`, command);
   }
-});
+
+  // UNIX Sockets IPC
+  const socketPath = '/var/run/sillybots/prismbotipc';
+  const SoHoVc = await guild.channels.fetch(process.env.SOHO_VC_ID) as Discord.VoiceChannel;
+  const SoHoTc = await guild.channels.fetch(process.env.SOHO_TC_ID) as Discord.TextChannel;
+  // Remove existing socket file if it exists
+  try {
+      fs.unlinkSync(socketPath);
+  } catch (error) {
+      // Ignore file not found error
+  }
+  
+  const server = net.createServer((socket) => {
+      console.log('Socket client connected');
+
+      socket.on('data', (data) => {
+          const message = JSON.parse(data.toString());
+
+          if (message.type === 'SoHoUpdate') {
+              console.log('Received SoHoUpdate message with data:', message.data);
+              const perpetrator = 
+                message.data.discordid ? `${message.data.discordid}` : "No perpetrator provided";
+              const SoHoEmbed = createStdEmbed();
+              SoHoEmbed.setTitle('SoHo Status Update');
+              SoHoEmbed.setFooter({ 
+                icon_url: client.user.avatarURL(), 
+                text: 'The Gayborhood', })
+              //SoHoEmbed.setThumbnail(client.user.displayAvatarURL({ size: 256, extension: 'png' }));
+              SoHoEmbed.setDescription(
+                `Room status is now: **${message.data.status}**\n` +
+                `Set by ${perpetrator}\n` +
+                `<t:${message.data.time}:R>`
+              );
+              SoHoTc.send({ embeds: [SoHoEmbed] });
+              switch(message.data.status) {
+                case "open":
+                  SoHoVc.setName(`SoHo: 🟢 Open`)
+                  break;
+                case "closed":
+                  SoHoVc.setName(`SoHo: 🔴 Closed`);
+                  break;
+                case "knock":
+                  SoHoVc.setName(`SoHo: 🟡 Knock`);
+                  break;
+                case "dnd":
+                  SoHoVc.setName(`SoHo: ⛔️ DnD`);
+                  break;
+                default:
+                  SoHoVc.setName(`SoHo: ${message.data.status}`);
+              }
+          } else if (message.type === 'otherType') { // for the future teehee
+              console.log('Received otherType message with data:', message.data);
+              // Handle this later heheh ribbet
+          } else {
+             console.log('Unknown message type:', message.type);
+          }
+     });
+
+      socket.on('end', () => {
+          console.log('Socket client disconnected');
+      });
+  });
+
+  server.listen(socketPath, () => {
+     console.log('UNIX socket ipc listening on', socketPath);
+     fs.chmod(socketPath, 0o770, (err) => {
+       if (err) {
+         console.error('Error setting file permissions:', err);
+       }
+     });
+
+     fs.chown(socketPath, 1004, 1015, (err) => {
+       if (err) {
+         console.error('Error setting file owner/group:', err);
+       }
+     });
+
+  });
+  // end unix sockets ipc
+
+}); // end: client.on ready
 
 // Slash commands
 client.on(Discord.Events.InteractionCreate, async (interaction) => {
@@ -190,6 +397,15 @@ client.on(Discord.Events.MessageCreate, async (message) => {
     } = message;
 
     await logger.trace('Message create event triggered');
+
+      // Void venting for prism
+    if (channel.id === process.env.VOID_VENT_CHANNEL_ID && !message.author.bot) {
+      try {
+        await message.delete();
+      } catch (err) {
+        console.error('Failed to delete the message:', err);
+      }
+    }
 
     if (member) {
       const command = content.split(' ').shift().toLowerCase(); // Get first word of string
