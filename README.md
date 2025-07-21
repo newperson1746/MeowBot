@@ -11,7 +11,7 @@ https://prism.andrew.cmu.edu - PRISM Website
 
 https://discord.gg/YudDZtb - Discord
 
-Any concerns, feedback or suggestions should be directed to spencerwencer on Discord.
+Any concerns, feedback or suggestions should be directed to shimmeringautumns on Discord.
 
 ## Requirements
 
