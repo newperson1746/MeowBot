@@ -15,8 +15,8 @@ Any concerns, feedback or suggestions should be directed to shimmeringautumns on
 
 ## Requirements
 
-- Node.js >= 14
-- Discord.js >= 12
+- Node.js >= 20
+- Discord.js >= 14
 - MySQL databases for the "SoHo" lounge status and Minecraft whitelist inteegration
 
 ## Installing
