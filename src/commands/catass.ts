@@ -7,6 +7,7 @@ import Discord, {
 } from 'discord.js';
 
 import { SlashCommand } from '../types/typedefs';
+import { createStdEmbed } from '../utils/embeds';
 
 export default class Gay {
   readonly command: SlashCommand = new SlashCommandBuilder()
@@ -32,16 +33,9 @@ export default class Gay {
     const emoji = options.getString('emoji') ?? '906028067221291009';
     const isCustom = options.getString('emoji') !== null;
 
-    const success = new EmbedBuilder()
-      .setTitle(isCustom ? 'Get reacted!' : 'Gayyyyyy')
-      .setColor(12915151)
-      .setDescription(`Hehe, ${options.getUser('user')} will be reacted ${isCustom ? emoji : 'gay'} for 5 minutes!`)
-      //.setThumbnail(client.user.displayAvatarURL({ size: 256, extension: 'png' }))
-      .setFooter({ 
-        // currently broken need to rewrite the embeds to the format in report.ts
-        icon_url: client.user.avatarURL(), 
-        text: 'The Gayborhood', })
-      .setTimestamp()
+    const success = createStdEmbed(interaction.client);
+    success.setTitle(isCustom ? 'Get reacted!' : 'Gayyyyyy');
+    success.setDescription(`Hehe, ${options.getUser('user')} will be reacted ${isCustom ? emoji : 'gay'} for 5 minutes!`);
 
     interaction.reply({ embeds: [success]});
 

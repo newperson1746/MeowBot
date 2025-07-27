@@ -1,3 +1,4 @@
+import dotenv from 'dotenv-extended';
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
@@ -8,7 +9,10 @@ import {
 import { createStdEmbed } from '../utils/embeds';
 import { sqlGetMcUuid, sqlWriteMcUuid } from '../utils/os_native_glue';
 
-const LINK_CHANNEL_ID = '1219655248344256623';
+dotenv.load();
+// const LINK_CHANNEL_ID = '1219655248344256623';
+const LINK_CHANNEL_ID = process.env.LINK_CHANNEL_ID;
+
 
 export default class McLink {
   readonly command = new SlashCommandBuilder()
@@ -27,7 +31,7 @@ export default class McLink {
     const { guild, client, options } = interaction;
     const member = interaction.member as GuildMember;
 
-    const badchannel = createStdEmbed();
+    const badchannel = createStdEmbed(interaction.client);
     badchannel.setTitle('Minecraft Linking');
     badchannel.setDescription(`Error! Please run this command in <#1219655248344256623>`);
 
@@ -37,15 +41,15 @@ export default class McLink {
       })
     }
 
-    const public_success = createStdEmbed();
+    const public_success = createStdEmbed(interaction.client);
     public_success.setTitle('Minecraft Linking');
     public_success.setDescription(`${member.user}, your Minecraft UUID has been whitelisted on the server!`);
 
-    const priv_progress = createStdEmbed();
+    const priv_progress = createStdEmbed(interaction.client);
     priv_progress.setTitle('Minecraft Linking');
     priv_progress.setDescription(`Please wait... executing SQL...`);
 
-    const priv_failure = createStdEmbed();
+    const priv_failure = createStdEmbed(interaction.client);
     priv_failure.setTitle('Minecraft Linking');
     priv_failure.setDescription(`Error! Please make sure your UUID is exactly 36 characters long.`);
 

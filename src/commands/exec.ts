@@ -34,7 +34,7 @@ export default class Exec {
 
     // temporary whitelist
     if ( interaction.member.id != process.env.OWNER_ID ) {
-      const embed = createStdEmbed();
+      const embed = createStdEmbed(interaction.client);
       embed.setTitle('Execute command');
       embed.setDescription(`${interaction.member.id} is not allowed to run this command!`);
       return interaction.reply({ embeds: [embed], ephemeral: false });

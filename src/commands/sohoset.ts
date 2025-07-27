@@ -30,44 +30,35 @@ export default class SoHoSet {
     const status = interaction.options.getString('status');
     const member = interaction.member as GuildMember;
 
-    const stdembed = createStdEmbed();
-    stdembed.setTitle('SoHo Set Status');
-    stdembed.setFooter({ 
-      icon_url: interaction.client.user.avatarURL(), 
-      text: 'The Gayborhood', })
-    //stdembed.setThumbnail(interaction.client.user.displayAvatarURL({ size: 256, extension: 'png' }));
-
-    const public_success = createStdEmbed();
+    const public_success = createStdEmbed(interaction.client);
     public_success.setTitle('SoHo Set Status');
     public_success.setDescription(
       
      `${interaction.member.user}, successfully set room status to **${status}**`
     );
-    stdembed.setFooter({ 
-      icon_url: interaction.client.user.avatarURL(), 
-      text: 'The Gayborhood', })
-    //public_success.setThumbnail(interaction.client.user.displayAvatarURL({ size: 256, extension: 'png' }));
 
+    const stdembed = createStdEmbed(interaction.client);
+    stdembed.setTitle('SoHo Set Status');
     stdembed.setDescription(`Please wait...`);
     interaction.reply({
       embeds: [stdembed],
       ephemeral: true
     })
     .then( () => {
-    sqlWriteSoHoStatus(member.toString(), status, (error, results, fields) => {
-      if (error) {
-	console.log('Error in SoHo status set query:', error);
-        stdembed.setDescription(`Error in sqlWriteSoHoStatus: ${error}`);
-        interaction.followUp({
-          embeds: [stdembed],
-          ephemeral: false
-        })
-      } else {
-        interaction.followUp({
-          embeds: [public_success]
-        });
-      }
-     })
+      sqlWriteSoHoStatus(member.toString(), status, (error, results, fields) => {
+        if (error) {
+          console.log('Error in SoHo status set query:', error);
+          stdembed.setDescription(`Error in sqlWriteSoHoStatus: ${error}`);
+          interaction.followUp({
+            embeds: [stdembed],
+            ephemeral: false
+          })
+        } else {
+          interaction.followUp({
+            embeds: [public_success]
+          });
+        }
+      })
     })
   }
 }

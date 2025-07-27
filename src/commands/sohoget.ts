@@ -12,16 +12,12 @@ export default class SoHoGet {
     .setDescription('Get SoHo room status');
 
   async execute(interaction: ChatInputCommandInteraction) {
-    const stdembed = createStdEmbed();
-    const public_success = createStdEmbed();
+    const stdembed = createStdEmbed(interaction.client);
+    const public_success = createStdEmbed(interaction.client);
     public_success.setTitle('SoHo Get Status');
-    public_success.setThumbnail(interaction.client.user.displayAvatarURL({ size: 256, extension: 'png' }));
+
     stdembed.setTitle('SoHo Get Status');
     stdembed.setDescription(`Please wait...`);
-    stdembed.setFooter({ 
-      icon_url: interaction.client.user.avatarURL(), 
-      text: 'The Gayborhood', })
-    //stdembed.setThumbnail(interaction.client.user.displayAvatarURL({ size: 256, extension: 'png' }));
     
     interaction.reply({
       embeds: [stdembed],

@@ -113,12 +113,8 @@ client.on(Discord.Events.ClientReady, async () => {
               console.log('Received SoHoUpdate message with data:', message.data);
               const perpetrator = 
                 message.data.discordid ? `${message.data.discordid}` : "No perpetrator provided";
-              const SoHoEmbed = createStdEmbed();
+              const SoHoEmbed = createStdEmbed(client);
               SoHoEmbed.setTitle('SoHo Status Update');
-              SoHoEmbed.setFooter({ 
-                icon_url: client.user.avatarURL(), 
-                text: 'The Gayborhood', })
-              //SoHoEmbed.setThumbnail(client.user.displayAvatarURL({ size: 256, extension: 'png' }));
               SoHoEmbed.setDescription(
                 `Room status is now: **${message.data.status}**\n` +
                 `Set by ${perpetrator}\n` +

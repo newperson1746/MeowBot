@@ -1,5 +1,5 @@
 // MySQL, crypto
-import { pool, poolmc } from '../index';
+import { pool, poolmc } from './mysql_init';
 import { QueryError, FieldPacket } from 'mysql2';
 import { ChildProcessWithoutNullStreams, spawnSync, SpawnSyncReturns } from 'child_process';
 import { createStdEmbed } from './embeds'
@@ -29,7 +29,7 @@ function executeCommandEmbed(command: string, args: string[],
   const stderr = result.stderr.toString();
   const error = result.error;
   const status = result.status;
-  const stdembed = createStdEmbed();
+  const stdembed = createStdEmbed(interaction.client);
 
   if (error) {
     console.error(error, stdout, stderr);
@@ -140,5 +140,5 @@ function sqlWriteSoHoStatus(discordid: string, status: string, callback: (error:
   );
 }
 
-module.exports = { executeCommand, executeCommandEmbed,
+export { executeCommand, executeCommandEmbed,
 sqlGetLinuxUser, sqlWriteLinuxUser, sqlGetMcUuid, sqlWriteMcUuid, sqlGetSoHoStatus, sqlWriteSoHoStatus };
