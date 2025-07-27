@@ -163,7 +163,7 @@ export default class Report implements ICommand {
     try {
       await interaction.reply({
         content:
-          'Thank you for helping keep Homework Help safe. Please contact us via <@575252669443211264> if the incident does not get resolved in a timely manner.',
+          'Thank you for helping keep Homework Help safe. Please contact us via <@1200149349833920623> if the incident does not get resolved in a timely manner.',
         ephemeral: true,
       });
     } catch (error) {
@@ -404,7 +404,7 @@ export default class Report implements ICommand {
           {
             name: reportEmbed.data.fields[0].name,
             value:
-              'A staff member has reviewed your report. If you think there was a mistake, please contact us via <@575252669443211264>.',
+              'A staff member has reviewed your report. If you think there was a mistake, please contact us via <@1200149349833920623>.',
             inline: true,
           },
           {
