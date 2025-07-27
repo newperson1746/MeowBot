@@ -13,9 +13,9 @@ import { createStdEmbed } from './utils/embeds';
 import { statuses } from './utils/statuses';
 
 // SQL init
-import {getMySQLVersion, getMySQLVersionMC } from './utils/mysql_init.ts';
+import {getMySQLVersion, getMySQLVersionMC } from './utils/mysql_init';
 
-getMySQLVersion();ß
+getMySQLVersion();
 getMySQLVersionMC();
 
 // Discord client itself
