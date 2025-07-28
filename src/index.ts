@@ -116,6 +116,7 @@ client.on(Discord.Events.ClientReady, async () => {
               const SoHoEmbed = createStdEmbed(client);
               SoHoEmbed.setTitle('SoHo Status Update');
               SoHoEmbed.setDescription(
+                `<@&${process.env.SOHO_HANGOUTS_ROLE_ID}>\n` +
                 `Room status is now: **${message.data.status}**\n` +
                 `Set by ${perpetrator}\n` +
                 `<t:${message.data.time}:R>`
