@@ -116,12 +116,12 @@ client.on(Discord.Events.ClientReady, async () => {
               const SoHoEmbed = createStdEmbed(client);
               SoHoEmbed.setTitle('SoHo Status Update');
               SoHoEmbed.setDescription(
-                `<@&${process.env.SOHO_HANGOUTS_ROLE_ID}>\n` +
                 `Room status is now: **${message.data.status}**\n` +
                 `Set by ${perpetrator}\n` +
                 `<t:${message.data.time}:R>`
               );
-              SoHoTc.send({ embeds: [SoHoEmbed] });
+              SoHoTc.send({ content: `<@&${process.env.SOHO_HANGOUTS_ROLE_ID}>`, 
+                            embeds: [SoHoEmbed] });
               switch(message.data.status) {
                 case "open":
                   SoHoVc.setName(`SoHo: 🟢 Open`)
