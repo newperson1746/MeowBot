@@ -93,7 +93,7 @@ client.on(Discord.Events.ClientReady, async () => {
   }
 
   // UNIX Sockets IPC
-  const socketPath = '/var/run/sillybots/prismbotipc';
+  const socketPath = '/var/run/sillybots/meowbotipc';
   const SoHoVc = await guild.channels.fetch(process.env.SOHO_VC_ID) as Discord.VoiceChannel;
   const SoHoTc = await guild.channels.fetch(process.env.SOHO_TC_ID) as Discord.TextChannel;
   // Remove existing socket file if it exists
