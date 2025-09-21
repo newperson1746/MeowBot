@@ -32,7 +32,7 @@ export default class SohoPplRm {
       ephemeral: true
     })
     .then( () => {
-      sqlRemoveSohoPeople(member.id.toString(), (error, results, fields) => {
+      sqlRemoveSohoPeople(member.id.toString(), (error, result) => {
         if (error) {
           console.log('Error in SoHo people remove query:', error);
           stdembed.setDescription(`Error in sqlRemoveSohoPeople: ${error}`);
@@ -41,7 +41,7 @@ export default class SohoPplRm {
             ephemeral: false
           })
         } else {
-          if (results.length === 0) {
+          if (result.affectedRows === 0) {
             public_success.setDescription(
               `${interaction.member.user}, you weren’t on the SoHo people list.`
             );
