@@ -8,7 +8,7 @@ import { sqlGetSohoPeople } from '../utils/os_native_glue';
 
 export default class SoHoPplGet {
   readonly command = new SlashCommandBuilder()
-    .setName('sohopplget')
+    .setName('list')
     .setDescription('Get people currently in SoHo');
 
   async execute(interaction: ChatInputCommandInteraction) {

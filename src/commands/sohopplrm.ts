@@ -10,7 +10,7 @@ import { sqlRemoveSohoPeople } from '../utils/os_native_glue';
 
 export default class SohoPplRm {
   readonly command = new SlashCommandBuilder()
-    .setName('sohopplrm')
+    .setName('out')
     .setDescription('Remove yourself from the soho people list')
     .setDefaultMemberPermissions(0n) // disabled until roles are granted
 

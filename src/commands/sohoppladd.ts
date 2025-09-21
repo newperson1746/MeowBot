@@ -10,7 +10,7 @@ import { sqlWriteSohoPeople } from '../utils/os_native_glue';
 
 export default class SohoPplAdd {
   readonly command = new SlashCommandBuilder()
-    .setName('sohoppladd')
+    .setName('in')
     .setDescription('Add yourself to the soho people list')
     .setDefaultMemberPermissions(0n) // disabled until roles are granted
 
