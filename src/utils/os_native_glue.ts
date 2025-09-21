@@ -144,7 +144,7 @@ function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: a
   poolsoho.query(
     'DELETE FROM sohopeople WHERE discordid = ?',
     [discordid],
-    (error: QueryError | null, results: any, fields: FieldPacket[]) => {
+    (error: QueryError | null, result: any) => {
       if (error) {
         callback(error, null);
       } else {
