@@ -1,5 +1,5 @@
 // MySQL, crypto
-import { pool, poolmc } from './mysql_init';
+import { pool, poolsoho } from './mysql_init';
 import { QueryError, FieldPacket } from 'mysql2';
 import { ChildProcessWithoutNullStreams, spawnSync, SpawnSyncReturns } from 'child_process';
 import { createStdEmbed } from './embeds'
