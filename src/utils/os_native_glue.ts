@@ -126,6 +126,13 @@ function sqlGetSohoPeople(callback: (error: QueryError | null, results: any[], f
     });
 }
 
+// need to remove the "duplicate key" thing and instead
+// make it return an error.
+// So we can ensure people have to remove themselves, 
+// not resetting the time.
+// Later we will use a trigger on DELETE
+// and accumulate the total time spent
+// in a separate table
 function sqlWriteSohoPeople(discordid: string, callback: (error: any, result: string | null) => void) {
   poolsoho.query(
     'INSERT INTO sohopeople (discordid, time) VALUES (?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE time = UNIX_TIMESTAMP()',
