@@ -113,6 +113,33 @@ function sqlWriteMcUuid(discordid: string, mcuuid: number, callback: (error: any
   );
 }
 
+function sqlGetSohoPeople(callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
+    poolsoho.query('SELECT discordid FROM sohopeople',
+    (error: QueryError | null, results: any[], fields: FieldPacket[]) => {
+        if (error) {
+            console.log(error);
+            callback(error, [], []);
+        } else {
+            console.log(results);
+            callback(null, results, fields);
+        }
+    });
+}
+
+function sqlWriteSohoPeople(discordid: string, mcuuid: number, callback: (error: any, result: string | null) => void) {
+  poolsoho.query(
+    'INSERT INTO sohopeople (discordid, time) VALUES (?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE time = UNIX_TIMESTAMP()',
+    [discordid],
+    (error: QueryError | null, results: any, fields: FieldPacket[]) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, 'Insert successful');
+      }
+    }
+  );
+}
+
 function sqlGetSoHoStatus(callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
     pool.query('SELECT * FROM sohostatus WHERE id = 1',
     (error: QueryError | null, results: any[], fields: FieldPacket[]) => {

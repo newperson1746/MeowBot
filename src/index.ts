@@ -75,7 +75,7 @@ client.on(Discord.Events.ClientReady, async () => {
 
   const guild = await client.guilds.fetch(process.env.GUILD_ID);
   const channel = await guild.channels.fetch(process.env.BOT_MESSAGES_CHANNEL_ID) as Discord.TextChannel | null;
-  await channel.send(`I'm ready to be edgy gay heheh ribbet`)
+  await channel.send(`I'm ready to be edgy meow heheh meow`)
 
   for (const file of commandFiles) {
     const name = file.endsWith('.ts')
