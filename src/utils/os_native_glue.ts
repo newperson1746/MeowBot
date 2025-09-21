@@ -126,9 +126,23 @@ function sqlGetSohoPeople(callback: (error: QueryError | null, results: any[], f
     });
 }
 
-function sqlWriteSohoPeople(discordid: string, mcuuid: number, callback: (error: any, result: string | null) => void) {
+function sqlWriteSohoPeople(discordid: string, callback: (error: any, result: string | null) => void) {
   poolsoho.query(
     'INSERT INTO sohopeople (discordid, time) VALUES (?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE time = UNIX_TIMESTAMP()',
+    [discordid],
+    (error: QueryError | null, results: any, fields: FieldPacket[]) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, 'Insert successful');
+      }
+    }
+  );
+}
+
+function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: string | null) => void) {
+  poolsoho.query(
+    'DELETE FROM sohopeople WHERE discordid = ?',
     [discordid],
     (error: QueryError | null, results: any, fields: FieldPacket[]) => {
       if (error) {
@@ -167,5 +181,5 @@ function sqlWriteSoHoStatus(discordid: string, status: string, callback: (error:
   );
 }
 
-export { executeCommand, executeCommandEmbed, sqlGetSohoPeople, sqlWriteSohoPeople,
+export { executeCommand, executeCommandEmbed, sqlGetSohoPeople, sqlWriteSohoPeople, sqlRemoveSohoPeople,
 sqlGetLinuxUser, sqlWriteLinuxUser, sqlGetMcUuid, sqlWriteMcUuid, sqlGetSoHoStatus, sqlWriteSoHoStatus };
