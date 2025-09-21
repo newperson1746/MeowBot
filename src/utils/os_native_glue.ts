@@ -140,7 +140,7 @@ function sqlWriteSohoPeople(discordid: string, callback: (error: any, result: st
   );
 }
 
-function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: string | null) => void) {
+function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: any) => void) {
   poolsoho.query(
     'DELETE FROM sohopeople WHERE discordid = ?',
     [discordid],
@@ -148,7 +148,7 @@ function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: s
       if (error) {
         callback(error, null);
       } else {
-        callback(null, 'Insert successful');
+        callback(null, result);
       }
     }
   );

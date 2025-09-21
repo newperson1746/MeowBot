@@ -41,7 +41,7 @@ export default class SohoPplRm {
             ephemeral: false
           })
         } else {
-          if (results.affectedRows === 0) {
+          if (results.length === 0) {
             public_success.setDescription(
               `${interaction.member.user}, you weren’t on the SoHo people list.`
             );
