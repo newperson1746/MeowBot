@@ -167,5 +167,5 @@ function sqlWriteSoHoStatus(discordid: string, status: string, callback: (error:
   );
 }
 
-export { executeCommand, executeCommandEmbed,
+export { executeCommand, executeCommandEmbed, sqlGetSohoPeople, sqlWriteSohoPeople,
 sqlGetLinuxUser, sqlWriteLinuxUser, sqlGetMcUuid, sqlWriteMcUuid, sqlGetSoHoStatus, sqlWriteSoHoStatus };
