@@ -114,7 +114,22 @@ function sqlWriteMcUuid(discordid: string, mcuuid: number, callback: (error: any
 }
 
 function sqlGetSohoPeople(callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
-    poolsoho.query('SELECT discordid FROM sohopeople',
+    poolsoho.query('SELECT * FROM sohopeople',
+    (error: QueryError | null, results: any[], fields: FieldPacket[]) => {
+        if (error) {
+            console.log(error);
+            callback(error, [], []);
+        } else {
+            console.log(results);
+            callback(null, results, fields);
+        }
+    });
+}
+
+// This gets only a single person. All data is on the first row,
+// so results[0].key
+function sqlGetSohoPerson(discordid: string, callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
+    poolsoho.query('SELECT * FROM sohopeople WHERE discordid = ?', [discordid],
     (error: QueryError | null, results: any[], fields: FieldPacket[]) => {
         if (error) {
             console.log(error);
@@ -161,6 +176,35 @@ function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: a
   );
 }
 
+// Write the accumulated time to the streaks table
+function sqlWriteSohoStreak(discordid: string, timetoadd: string, callback: (error: any, result: string | null) => void) {
+  poolsoho.query(
+    'INSERT INTO sohopeople (discordid, totaltime) VALUES (?, ?) ON DUPLICATE KEY UPDATE totaltime = totaltime + VALUES(totaltime)',
+    [discordid, timetoadd],
+    (error: QueryError | null, results: any, fields: FieldPacket[]) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, 'Insert successful');
+      }
+    }
+  );
+}
+
+// Get the accumulated time from the streaks table
+function sqlGetSohoStreak(discordid: string, callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
+    poolsoho.query('SELECT * FROM sohostreaks WHERE discordid = ?', [discordid],
+    (error: QueryError | null, results: any[], fields: FieldPacket[]) => {
+        if (error) {
+            console.log(error);
+            callback(error, [], []);
+        } else {
+            console.log(results);
+            callback(null, results, fields);
+        }
+    });
+}
+
 function sqlGetSoHoStatus(callback: (error: QueryError | null, results: any[], fields: FieldPacket[]) => void) {
     pool.query('SELECT * FROM sohostatus WHERE id = 1',
     (error: QueryError | null, results: any[], fields: FieldPacket[]) => {
@@ -189,4 +233,5 @@ function sqlWriteSoHoStatus(discordid: string, status: string, callback: (error:
 }
 
 export { executeCommand, executeCommandEmbed, sqlGetSohoPeople, sqlWriteSohoPeople, sqlRemoveSohoPeople,
-sqlGetLinuxUser, sqlWriteLinuxUser, sqlGetMcUuid, sqlWriteMcUuid, sqlGetSoHoStatus, sqlWriteSoHoStatus };
+sqlGetLinuxUser, sqlWriteLinuxUser, sqlGetMcUuid, sqlWriteMcUuid, sqlGetSoHoStatus, sqlWriteSoHoStatus,
+sqlGetSohoPerson, sqlGetSohoStreak, sqlWriteSohoStreak };

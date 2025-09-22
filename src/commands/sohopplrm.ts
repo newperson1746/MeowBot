@@ -6,7 +6,7 @@ import {
   GuildMember,
 } from 'discord.js';
 import { createStdEmbed } from '../utils/embeds';
-import { sqlRemoveSohoPeople } from '../utils/os_native_glue';
+import { sqlGetSohoPerson, sqlRemoveSohoPeople, sqlGetSohoStreak, sqlWriteSohoStreak } from '../utils/os_native_glue';
 
 export default class SohoPplRm {
   readonly command = new SlashCommandBuilder()
@@ -32,6 +32,16 @@ export default class SohoPplRm {
       ephemeral: true
     })
     .then( () => {
+  
+    let stats;
+    sqlGetSohoPerson(member.id.toString(), (error, results, fields) => {
+      if (error) {
+        console.log('Error in Soho people get query:', error);
+      } else {
+        stats = results[0];
+      }
+    });
+
       sqlRemoveSohoPeople(member.id.toString(), (error, result) => {
         if (error) {
           console.log('Error in SoHo people remove query:', error);
@@ -46,8 +56,28 @@ export default class SohoPplRm {
               `${interaction.member.user}, you weren’t on the SoHo people list.`
             );
           } else {
+            const timeIn = stats.time;
+            const timeOut = Math.floor(Date.now() / 1000)
+            let totaltime;
+            sqlGetSohoStreak(member.id.toString(), (error, results, fields) => {
+              if (error) {
+                console.log('Error in Soho streaks get query:', error);
+              } else {
+                if (results[0].length === 0) {
+                  // The user does not have a streak yet
+                  totaltime = 0;
+                } else {
+                  totaltime = results[0].totaltime;
+                }
+              }
+            });
+        
             public_success.setDescription(
-              `${interaction.member.user}, successfully removed yourself from the SoHo people list`
+              `${interaction.member.user}, successfully removed yourself from the SoHo people list\n\n` +
+              `You entered Soho at <t:${timeIn}:f> \n` +
+              `You left Soho at <t:${timeOut}:f> \n\n` +
+              `Time elapsed this visit: <t:${timeOut - timeIn}:R>` +
+              `Soho streak (total) time: <t:${totaltime}:R>`
             );
           }
         }
