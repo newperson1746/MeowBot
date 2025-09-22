@@ -1,4 +1,6 @@
 import dotenv from 'dotenv-extended';
+import humanizeDuration from 'humanize-duration';
+
 import {
   SlashCommandBuilder,
   EmbedBuilder,
@@ -70,16 +72,31 @@ export default class SohoPplRm {
                   // there is at least one row in the result (the user)
                   totaltime = results[0].totaltime;
                 }
+
+                const elapsed = timeOut - timeIn;
+
+                // Everything is calculated, let's add the new value
+                sqlWriteSohoStreak(member.id.toString(), elapsed.toString(), (error, result) => {
+                  if (error) {
+                    console.log('Error in Soho streaks write query:', error);
+                  }
+                });
+
+                const humanElapsed = humanizeDuration(elapsed * 1000, {largest: 2, round: true});
+                const humanStreak = humanizeDuration(totaltime * 1000, {largest: 2, round: true});
+
+                public_success.setDescription(
+                  `${interaction.member.user}, successfully removed yourself from the SoHo people list\n\n` +
+                  `You entered Soho at <t:${timeIn}:f> \n` +
+                  `You left Soho at <t:${timeOut}:f> \n\n` +
+                  `Time elapsed this visit: ${humanElapsed}` +
+                  `Current Soho streak time: ${humanStreak}`
+                );
+
+                sqlWriteSoho
               }
             });
-        
-            public_success.setDescription(
-              `${interaction.member.user}, successfully removed yourself from the SoHo people list\n\n` +
-              `You entered Soho at <t:${timeIn}:f> \n` +
-              `You left Soho at <t:${timeOut}:f> \n\n` +
-              `Time elapsed this visit: <t:${timeOut - timeIn}:R>` +
-              `Soho streak (total) time: <t:${totaltime}:R>`
-            );
+      
           }
         }
 
