@@ -179,7 +179,7 @@ function sqlRemoveSohoPeople(discordid: string, callback: (error: any, result: a
 // Write the accumulated time to the streaks table
 function sqlWriteSohoStreak(discordid: string, timetoadd: string, callback: (error: any, result: string | null) => void) {
   poolsoho.query(
-    'INSERT INTO sohopeople (discordid, totaltime) VALUES (?, ?) ON DUPLICATE KEY UPDATE totaltime = totaltime + VALUES(totaltime)',
+    'INSERT INTO sohostreaks (discordid, totaltime) VALUES (?, ?) ON DUPLICATE KEY UPDATE totaltime = totaltime + VALUES(totaltime)',
     [discordid, timetoadd],
     (error: QueryError | null, results: any, fields: FieldPacket[]) => {
       if (error) {
