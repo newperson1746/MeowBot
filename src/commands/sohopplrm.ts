@@ -92,8 +92,6 @@ export default class SohoPplRm {
                   `Time elapsed this visit: ${humanElapsed}` +
                   `Current Soho streak time: ${humanStreak}`
                 );
-
-                sqlWriteSoho
               }
             });
       
