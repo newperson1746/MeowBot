@@ -57,6 +57,7 @@ export default class SohoPplRm {
             } else {
               const timeIn = stats.time;
               const timeOut = Math.floor(Date.now() / 1000)
+              const elapsed = timeOut - timeIn; 
               let totaltime;
               sqlGetSohoStreak(member.id.toString(), (error, results, fields) => {
                 if (error) {
@@ -64,13 +65,16 @@ export default class SohoPplRm {
                 } else {
                   if (results.length === 0) {
                     // The user does not have a streak yet
-                    totaltime = 0;
+                    totaltime = elapsed;
                   } else {
                     // there is at least one row in the result (the user)
-                    totaltime = results[0].totaltime;
+                    // Remember we add elapsed because this is the new running
+                    // total that will be in the table after the Write query
+                    totaltime = results[0].totaltime + elapsed;
                   }
 
-                  const elapsed = timeOut - timeIn;
+                  const humanElapsed = humanizeDuration(elapsed * 1000, {largest: 2, round: true});
+                  const humanStreak = humanizeDuration(totaltime * 1000, {largest: 2, round: true});
 
                   // Everything is calculated, let's add the new value
                   sqlWriteSohoStreak(member.id.toString(), elapsed.toString(), (error, result) => {
@@ -78,9 +82,6 @@ export default class SohoPplRm {
                       console.log('Error in Soho streaks write query:', error);
                     }
                   });
-
-                  const humanElapsed = humanizeDuration(elapsed * 1000, {largest: 2, round: true});
-                  const humanStreak = humanizeDuration(totaltime * 1000, {largest: 2, round: true});
 
                   public_success.setDescription(
                     `${interaction.member.user}, successfully removed yourself from the SoHo people list\n\n` +
