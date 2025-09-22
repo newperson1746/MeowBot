@@ -63,10 +63,11 @@ export default class SohoPplRm {
               if (error) {
                 console.log('Error in Soho streaks get query:', error);
               } else {
-                if (results[0].length === 0) {
+                if (results.length === 0) {
                   // The user does not have a streak yet
                   totaltime = 0;
                 } else {
+                  // there is at least one row in the result (the user)
                   totaltime = results[0].totaltime;
                 }
               }
