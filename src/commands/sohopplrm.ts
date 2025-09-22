@@ -86,7 +86,7 @@ export default class SohoPplRm {
                     `${interaction.member.user}, successfully removed yourself from the SoHo people list\n\n` +
                     `You entered Soho at <t:${timeIn}:f> \n` +
                     `You left Soho at <t:${timeOut}:f> \n\n` +
-                    `Time elapsed this visit: ${humanElapsed}` +
+                    `Time elapsed this visit: ${humanElapsed}\n` +
                     `Current Soho streak time: ${humanStreak}`
                   );
 
